@@ -27,7 +27,7 @@ public class UserAPI {
     @PostMapping(value = "", consumes = "application/json")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO user) {
         if (userRepo.existsByCode(user.getCode())) {
-            return ResponseEntity.badRequest().body("User with code X already exists");
+            return ResponseEntity.badRequest().body("User with code " + user.getCode() + " already exists");
         } else {
             userRepo.save(user.parseDTO());
             return ResponseEntity.created(URI.create("/api/users/" + user.getCode())).build();
@@ -61,7 +61,7 @@ public class UserAPI {
             userRepo.saveAndFlush(oldUser);
             return ResponseEntity.ok("Update successful");
         } else {
-            return ResponseEntity.badRequest().body("User with code X does not exists");
+            return ResponseEntity.badRequest().body("User with code " + id + " does not exists");
         }
     }
 
