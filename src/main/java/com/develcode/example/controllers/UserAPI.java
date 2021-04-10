@@ -36,6 +36,7 @@ public class UserAPI {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable("id") Long id) {
+        // map to DTO and then to ResponseEntity
         return userRepo.findById(id)
                 .map(UserDTO::parseOriginal)
                 .map(ResponseEntity::ok)
@@ -56,6 +57,7 @@ public class UserAPI {
     public ResponseEntity<String> updateById(@PathVariable("id") Long id, @RequestBody UserDTO user) {
         var userEntity = userRepo.findById(id);
         if (userEntity.isPresent()) {
+            // to avoid replacing old values by null values, use the mergeAnother() method
             var oldUser = userEntity.get();
             oldUser.mergeAnother(user.parseDTO());
             userRepo.saveAndFlush(oldUser);
@@ -68,6 +70,7 @@ public class UserAPI {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        // responsible for handling validation exception thrown when a @Valid annotatio is present
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();

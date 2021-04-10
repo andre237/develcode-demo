@@ -21,7 +21,6 @@ class ExampleApplicationTests {
     @Autowired
     private TestRestTemplate testTemplate;
 
-
     @Test
     public void testPost() throws Exception {
         var imagePath = Paths.get(this.getClass().getClassLoader().getResource("suporte-ao-cliente.png").toURI());
