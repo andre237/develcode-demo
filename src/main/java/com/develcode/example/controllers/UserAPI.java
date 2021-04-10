@@ -42,6 +42,29 @@ public class UserAPI {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") Long id) {
+        if (!userRepo.existsByCode(id)) {
+            return ResponseEntity.notFound().build();
+        } else {
+            userRepo.deleteById(id);
+            return ResponseEntity.ok("Deletion successful");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateById(@PathVariable("id") Long id, @RequestBody UserDTO user) {
+        var userEntity = userRepo.findById(id);
+        if (userEntity.isPresent()) {
+            var oldUser = userEntity.get();
+            oldUser.mergeAnother(user.parseDTO());
+            userRepo.saveAndFlush(oldUser);
+            return ResponseEntity.ok("Update successful");
+        } else {
+            return ResponseEntity.badRequest().body("User with code X does not exists");
+        }
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {

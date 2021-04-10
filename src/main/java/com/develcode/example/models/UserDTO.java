@@ -21,7 +21,7 @@ public class UserDTO {
     @NotNull @NotEmpty
     private String name;
 
-    @Getter @Setter @JsonFormat(pattern = "yyyy-mm-dd") 
+    @Getter @Setter @JsonFormat(pattern = "yyyy-MM-dd") 
     private Date birthDate;
 
     @Getter @Setter 

@@ -23,4 +23,22 @@ public class User {
     @Lob
     @Getter @Setter private byte[] photo;
 
+    public void mergeAnother(final User other) {
+        if (other.getCode() != null) {
+            this.code = other.getCode();
+        }
+
+        if (other.getName() != null) {
+            this.name = other.getName();
+        }
+
+        if (other.getBirthDate() != null) {
+            this.birthDate = other.getBirthDate();
+        }
+
+        if (other.getPhoto() != null) {
+            this.photo = other.getPhoto();
+        }
+    }
+
 }
