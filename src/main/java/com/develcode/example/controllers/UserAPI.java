@@ -1,12 +1,17 @@
 package com.develcode.example.controllers;
 
+import java.net.URI;
+import java.util.Map;
+import java.util.HashMap;
+import javax.validation.Valid;
 import com.develcode.example.models.UserDTO;
 import com.develcode.example.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
+import org.springframework.http.HttpStatus; 
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.FieldError;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,9 +25,13 @@ public class UserAPI {
     }
 
     @PostMapping(value = "", consumes = "application/json")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO user) {
-        userRepo.save(user.parseDTO());
-        return ResponseEntity.created(URI.create("/api/users/" + user.getCode())).build();
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO user) {
+        if (userRepo.existsByCode(user.getCode())) {
+            return ResponseEntity.badRequest().body("User with code X already exists");
+        } else {
+            userRepo.save(user.parseDTO());
+            return ResponseEntity.created(URI.create("/api/users/" + user.getCode())).build();
+        }
     }
 
     @GetMapping("/{id}")
@@ -31,6 +40,18 @@ public class UserAPI {
                 .map(UserDTO::parseOriginal)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 
 }

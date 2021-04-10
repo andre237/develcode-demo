@@ -7,16 +7,28 @@ import lombok.Setter;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.util.Date;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 public class UserDTO {
 
-    @Getter @Setter private Long code;
-    @Getter @Setter private String name;
-    @Getter @Setter @JsonFormat(pattern = "yyyy-mm-dd") private Date birthDate;
-    @Getter @Setter private String imageBase64;
+    @Getter @Setter 
+    @NotNull
+    private Long code;
+
+    @Getter @Setter
+    @NotNull @NotEmpty
+    private String name;
+
+    @Getter @Setter @JsonFormat(pattern = "yyyy-mm-dd") 
+    private Date birthDate;
+
+    @Getter @Setter 
+    private String imageBase64;
 
     public User parseDTO() {
+        // convert the base64 encoded image that comes from the POST request to a byte array
         byte[] decodedPhoto = imageBase64 != null ? Base64.decodeBase64(imageBase64.getBytes()) : null;
         return new User(code, name, birthDate, decodedPhoto);
     }
