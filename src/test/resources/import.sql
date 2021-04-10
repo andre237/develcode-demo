@@ -1,0 +1,1 @@
+insert into user_ (code, name, birth_date) values (123, 'Phill', '2001-04-15');
